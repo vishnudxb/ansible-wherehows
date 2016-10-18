@@ -1,0 +1,70 @@
+---
+- name: upgrade all packages
+  yum: name=* state=latest
+
+- name: installing tools...
+  yum: name={{ item }} state=installed
+  with_items:
+    - vim
+    - tmux
+    - unzip
+    - wget
+    - telnet
+    - git
+    - java-1.8.0-openjdk-devel
+    - java-1.8.0-openjdk
+
+- name: create JAVA_HOME in root .bashrc
+  lineinfile: "dest=/root/.bashrc state=present insertafter=EOF create=True line='export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.102-1.b14.el7_2.x86_64'"
+
+- name: download gradle 
+  get_url: dest=/tmp url={{gradle_zipfile}}
+
+- name: download play
+  get_url: dest=/tmp url={{play_zipfile}}
+
+- name: extract gradle
+  shell: unzip /tmp/gradle-2.4-bin.zip -d /usr/local/share/
+
+
+- name: extract play
+  shell: unzip /tmp/play-2.2.4.zip -d /usr/local/share/
+
+- name: create GRADLE_HOME in root .bashrc
+  lineinfile: "dest=/root/.bashrc state=present insertafter=EOF create=True line='export GRADLE_HOME=/usr/local/share/gradle-2.4'"
+
+- name: create GRADLE_HOME in root .bashrc
+  lineinfile: "dest=/root/.bashrc state=present insertafter=EOF create=True line='export PLAY_HOME=/usr/local/share/play-2.2.4'"
+
+- name: create WHZ_DB_USERNAME in root .bashrc
+  lineinfile: "dest=/root/.bashrc state=present insertafter=EOF create=True line='export WHZ_DB_USERNAME=wherehows'"
+
+- name: create WHZ_DB_PASSWORD in root .bashrc
+  lineinfile: "dest=/root/.bashrc state=present insertafter=EOF create=True line='export WHZ_DB_PASSWORD=wherehows'"
+
+- name: create WHZ_DB_HOST in root .bashrc
+  lineinfile: "dest=/root/.bashrc state=present insertafter=EOF create=True line='export WHZ_DB_HOST=localhost'"
+
+- name : add to PATH
+  lineinfile: "dest=/root/.bashrc state=present insertafter=EOF create=True line='export PATH=$PATH:$GRADLE_HOME/bin'"
+
+- name: add alias
+  lineinfile: "dest=/root/.bashrc state=present insertafter=EOF create=True line='alias gradle=$GRADLE_HOME/bin/gradle'"
+
+- name: source bashrc
+  action: shell source /root/.bashrc
+
+- name: download mysql repo
+  get_url: dest=/tmp url=http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+
+- name: install mysql repo
+  command: rpm -ivh /tmp/mysql-community-release-el7-5.noarch.rpm
+
+- name: upgrade all packages
+  yum: name=* state=latest
+
+- name: install mysql-server
+  yum: name=mysql-server state=latest
+
+- name: start mysql service
+  service: name=mysqld state=started

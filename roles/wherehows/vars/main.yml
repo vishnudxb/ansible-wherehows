@@ -1,0 +1,5 @@
+---
+# vars file for ignite
+ignite_name : 'apache-ignite-fabric-{{ignite_ver}}-bin'
+ignite_zip : '{{ignite_name}}.zip'
+ignite_url : '{{ignite_mirror}}/{{ignite_ver}}/{{ignite_zip}}'

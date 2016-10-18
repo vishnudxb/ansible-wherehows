@@ -1,0 +1,8 @@
+---
+- hosts: tag_Name_wherehows
+  gather_facts: false
+  become: yes
+  become_user: root
+  roles:
+    - common-packages
+    - wherehows

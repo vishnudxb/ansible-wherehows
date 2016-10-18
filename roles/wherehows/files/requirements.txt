@@ -1,0 +1,5 @@
+pycrypto==2.6.1
+python-louvain==0.3
+louvain==0.5.3
+python-igraph==0.7.1.post6
+igraph==0.1.11

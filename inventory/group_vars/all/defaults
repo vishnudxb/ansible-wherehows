@@ -1,0 +1,13 @@
+---
+default_aws_region: "us-east-1"
+default_aws_zone: "us-east-1b"
+all_aws_zones: [ "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e" ]
+default_aws_keypair: keypairname
+
+# us-east-1
+debian_jessie_ami_pvm: "ami-896d85e2"
+debian_jessie_ami_hvm: "ami-116d857a"
+debian_wheezy_ami_hvm: "ami-e0efab88"
+ubuntu_trusty_ami_hvm: "ami-d05e75b8"
+ubuntu_trusty_ami_pvm: "ami-d85e75b0"
+ubuntu_snappy_ami_hvm: "ami-032c7166"

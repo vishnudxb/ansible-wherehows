@@ -1,0 +1,48 @@
+---
+- name: change play settings
+  replace: dest=/usr/local/share/play-2.2.4/framework/build  regexp='-Xss1M' replace='-Xss2M'
+
+- name: download wherehows git repo
+  git: repo=https://github.com/linkedin/WhereHows.git dest=/opt/wherehows
+
+
+- name: build
+  shell: export PLAY_HOME=/usr/local/share/play-2.2.4 && cd /opt/wherehows && ./gradlew assemble build
+
+
+- name: copy kafka script
+  copy: src=kafka_tracking.sql dest=/opt/wherehows/data-model/DDL/ETL_DDL/kafka_tracking.sql
+
+
+- name: copy sql script
+  copy: src=create_db_user.sql dest=/opt/wherehows/create_db_user.sql
+
+- name: run create db and user script
+  shell: mysql -uroot < create_db_user.sql chdir=/opt/wherehows
+
+- name: run create tables script
+  shell: mysql -hlocalhost -uwherehows -pwherehows -Dwherehows < create_all_tables_wrapper.sql chdir=/opt/wherehows/data-model/DDL
+
+- name: copy backend start script
+  copy: src=wherehows_backend_start.sh dest=/opt/wherehows/wherehows_backend_start.sh mode="u+x"
+
+- name: copy frontend start script
+  copy: src=wherehows_frontend_start.sh dest=/opt/wherehows/wherehows_frontend_start.sh mode="u+x"
+
+- name: copy backend service file
+  copy: src=wherehows_backend dest=/etc/init.d/wherehows_backend mode="u+x"
+
+- name: copy frontend service file
+  copy: src=wherehows_frontend dest=/etc/init.d/wherehows_frontend mode="u+x"
+
+- name: systemctl reload
+  shell: systemctl daemon-reload 
+
+- name: create logs dir
+  file: path=/var/log/wherehows state=directory
+
+- name: run wherehows backend
+  service: name=wherehows_backend state=started
+
+- name: run wherehows frontend
+  service: name=wherehows_frontend state=started
